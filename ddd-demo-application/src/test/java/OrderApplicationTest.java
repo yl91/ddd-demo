@@ -39,6 +39,7 @@ public class OrderApplicationTest {
 
         DeliveryAddressInfo deliveryAddressInfo=new DeliveryAddressInfo("王五","13698883222","北京");
 
+        //OrderApplication orderApplication=new OrderApplication();
         orderApplication.create(vendorInfo,2,new BigDecimal("2"),orderItemList,deliveryAddressInfo);
     }
 

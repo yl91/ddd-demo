@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Order">
+    <resultMap id="Order" type="ddd.demo.domain.order.model.Order">
+        <constructor>
+            <arg column="id" javaType="_long"/>
+            <arg column="total_price" javaType="decimal"/>
+            <arg column="discount_price" javaType="decimal" />
+            <arg column="pay_price" javaType="decimal" />
+            <arg column="user_id" javaType="_int"/>
+            <arg resultMap="Order.VendorInfo" javaType="ddd.demo.domain.order.model.VendorInfo"/>
+            <arg select="Order.findOrderItems" column="id" javaType="java.util.List" />
+            <arg resultMap="Order.DeliveryAddressInfo" javaType="ddd.demo.domain.order.model.DeliveryAddressInfo"/>
+        </constructor>
+        <result property="createTime" column="create_time" />
+        <result property="deliveryTime" column="delivery_time" />
+        <result property="outTime" column="out_time" />
+        <result property="confirmTime" column="confirm_time" />
+        <result property="completeTime" column="complete_time" />
+        <result property="cancelTime" column="cancel_time" />
+        <result property="orderStatus" column="order_status" />
+    </resultMap>
+    <resultMap id="VendorInfo" type="ddd.demo.domain.order.model.VendorInfo">
+        <constructor>
+            <arg column="vendor_id" javaType="_long"/>
+            <arg column="vendor_name" javaType="string"/>
+        </constructor>
+        <result property="id" column="vendor_id" />
+    </resultMap>
+    <resultMap id="DeliveryAddressInfo" type="ddd.demo.domain.order.model.DeliveryAddressInfo">
+        <constructor>
+            <arg column="delivery_name" javaType="string"/>
+            <arg column="delivery_phone" javaType="string"/>
+            <arg column="delivery_address" javaType="string"/>
+        </constructor>
+    </resultMap>
+    <resultMap id="OrderItem" type="ddd.demo.domain.order.model.OrderItem">
+        <constructor>
+            <arg column="sku_id" javaType="_int"/>
+            <arg column="number" javaType="_int"/>
+            <arg column="price" javaType="java.math.BigDecimal" />
+        </constructor>
+    </resultMap>
+    <insert id="add">
+       INSERT INTO ddd_order
+	(id, total_price, pay_price, create_time, order_status, discount_price, user_id, vendor_id, vendor_name, delivery_name, delivery_phone, delivery_address)
+	VALUES (#{id}, #{totalPrice}, #{payPrice}, #{createTime}, #{orderStatus}, #{discountPrice}, #{userId}, #{vendorInfo.id}, #{vendorInfo.name}, #{deliveryAddressInfo.name}, #{deliveryAddressInfo.phone}, #{deliveryAddressInfo.address})
+    </insert>
+
+    <insert id="addItems">
+        INSERT INTO ddd_order_items
+	(order_id, sku_id, number, price)
+	VALUES (#{orderId}, #{orderItem.skuId}, #{orderItem.number}, #{orderItem.price});
+    </insert>
+
+    <select id="findOrderOne" resultMap="Order">
+      SELECT * FROM ddd_order WHERE id=#{id}
+    </select>
+    <select id="findOrderItems" resultMap="OrderItem">
+      SELECT sku_id, number, price
+	FROM ddd_order_items WHERE order_id=#{id}
+    </select>
+
+
+</mapper>
